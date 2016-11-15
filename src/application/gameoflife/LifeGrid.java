@@ -3,12 +3,6 @@ import java.io.File;
 import java.io.FileNotFoundException;
 import java.util.Scanner;
 
-import org.w3c.dom.css.Rect;
-
-import javafx.scene.paint.Color;
-import javafx.scene.paint.Paint;
-import javafx.scene.shape.Rectangle;
-
 public class LifeGrid {
 	int[][] grid;
 	int generation = 0;
@@ -73,9 +67,6 @@ public class LifeGrid {
 						newGrid[i][j] = 1;
 					}
 				}
-				/*else {
-					System.out.println("No rules matched");
-				}*/ // What about 2 neightbours as a dead cell
 			}
 		}
 
@@ -112,7 +103,6 @@ public class LifeGrid {
 
 	public void toggleCell(int x, int y) {
 		grid[y][x] = 1;
-		System.out.println();
 	}
 	public int[] row(int i) {
 		return grid[i];
