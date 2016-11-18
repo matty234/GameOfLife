@@ -19,6 +19,7 @@ public class Main {
 	static int delay = 200;
 	static String file = null;
 
+	@SuppressWarnings("static-access")
 	public static void main(String[] args) throws InterruptedException, FileNotFoundException {
 
 		Options options = new Options();

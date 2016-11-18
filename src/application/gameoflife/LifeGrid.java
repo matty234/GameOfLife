@@ -101,8 +101,8 @@ public class LifeGrid {
 		return height;
 	}
 
-	public void toggleCell(int x, int y) {
-		grid[y][x] = 1;
+	public int toggleCell(int x, int y) {
+		return (grid[y][x] = (grid[y][x] == 1 || grid[y][x] == 2)?0:1);
 	}
 	public int[] row(int i) {
 		return grid[i];
@@ -119,6 +119,7 @@ public class LifeGrid {
 				grid[i][j] = (Math.random() < 0.5)?1:0;
 			}
 		}
+		generation = 0;
 	}
 
 }
