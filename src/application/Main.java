@@ -99,11 +99,12 @@ public class Main {
 	private static void launchText() throws InterruptedException, FileNotFoundException {
 		grid = new LifeGrid(x, y, file);
 		grid.show();
-
+		int[][] delta;
 		do {
 			Thread.sleep(delay);
-			grid.run();
-		} while (grid.show());
+			delta = grid.runDelta();
+
+		} while (grid.showDelta(delta));
 	}
 
 }

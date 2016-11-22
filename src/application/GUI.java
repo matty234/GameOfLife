@@ -35,8 +35,9 @@ public class GUI extends Application {
 	public void start(Stage primaryStage) {
 		this.primaryStage = primaryStage;
 		try {
+			System.out.println("Loading GUI. This could take a while.");
 			grid = new LifeGrid(x, y, file);
-			board = new BoardGUI(grid);
+			board = new BoardGUI(grid, x, y);
 			Scene scene = new Scene(board.getTilePane());
 			primaryStage.setScene(scene);
 			primaryStage.show();

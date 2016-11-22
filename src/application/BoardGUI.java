@@ -25,23 +25,23 @@ public class BoardGUI {
 	private double tileWidth = DEFAULT_TILE_DIME;
 	private double tileHeight = DEFAULT_TILE_DIME;
 
-	public BoardGUI(LifeGrid grid, int spacing) {
-		this(grid);
+	public BoardGUI(LifeGrid grid, int x, int y, int spacing) {
+		this(grid, x, y);
 		this.tileSpacingHeight = spacing;
 		this.tileSpacingWidth = spacing;
 
 	}
 	
-	public BoardGUI(LifeGrid grid) {
-		rowLength = grid.getWidth();
-		columnLength = grid.getHeight();
+	public BoardGUI(LifeGrid grid, int x, int y) {
+		rowLength = x;
+		columnLength = y;
 		for (int j = 0; j < grid.getHeight(); j++) {
 			int[] row = grid.row(j);
 			for (int i = 0; i < grid.getWidth(); i++) {
 				Rectangle r = new Rectangle(tileWidth, tileHeight, getRectangleColor(row[i]));
 			
 				r.setId(j + ":" + i);
-
+ 
 				r.setOnMouseClicked(new EventHandler<MouseEvent>() {
 					@Override
 					public void handle(MouseEvent event) {
@@ -61,9 +61,12 @@ public class BoardGUI {
 	public void updateBoard(int[][] gridUpdate) {
 		for (int j = 0; j < gridUpdate.length; j++) {
 			int[] row = gridUpdate[j];
-			for (int i = 0; i < gridUpdate.length; i++) {
-				Rectangle r = (Rectangle) gridPane.getChildren().get(((rowLength * j) + i));
-				r.setFill(getRectangleColor(row[i]));
+			for (int i = 0; i < gridUpdate[i].length; i++) {
+				if(row[i] != 3) {
+					Rectangle r = (Rectangle) gridPane.getChildren().get(((rowLength * j) + i));
+					Color cl = getRectangleColor(row[i]);
+					r.setFill(cl);
+				}
 			}
 		}
 	}
