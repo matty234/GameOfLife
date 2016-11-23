@@ -10,7 +10,7 @@ import javafx.scene.shape.Rectangle;
 
 public class BoardGUI {
 
-	static int DEFAULT_TILE_DIME = 10;
+	static int DEFAULT_TILE_DIME = 5;
 	static int DEFAULT_TILE_SPACING = 2;
 
 	
@@ -25,16 +25,16 @@ public class BoardGUI {
 	private double tileWidth = DEFAULT_TILE_DIME;
 	private double tileHeight = DEFAULT_TILE_DIME;
 
-	public BoardGUI(LifeGrid grid, int x, int y, int spacing) {
-		this(grid, x, y);
+	public BoardGUI(LifeGrid grid, int spacing) {
+		this(grid);
 		this.tileSpacingHeight = spacing;
 		this.tileSpacingWidth = spacing;
 
 	}
 	
-	public BoardGUI(LifeGrid grid, int x, int y) {
-		rowLength = x;
-		columnLength = y;
+	public BoardGUI(LifeGrid grid) {
+		rowLength = grid.getWidth();
+		columnLength = grid.getHeight();
 		for (int j = 0; j < grid.getHeight(); j++) {
 			int[] row = grid.row(j);
 			for (int i = 0; i < grid.getWidth(); i++) {
@@ -60,11 +60,10 @@ public class BoardGUI {
 
 	public void updateBoard(int[][] gridUpdate) {
 		for (int j = 0; j < gridUpdate.length; j++) {
-			int[] row = gridUpdate[j];
-			for (int i = 0; i < gridUpdate[i].length; i++) {
-				if(row[i] != 3) {
+			for (int i = 0; i < gridUpdate[j].length; i++) {
+				if(gridUpdate[j][i] != 3) {
 					Rectangle r = (Rectangle) gridPane.getChildren().get(((rowLength * j) + i));
-					Color cl = getRectangleColor(row[i]);
+					Color cl = getRectangleColor(gridUpdate[j][i]);
 					r.setFill(cl);
 				}
 			}

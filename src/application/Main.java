@@ -1,5 +1,6 @@
 package application;
 
+import java.io.File;
 import java.io.FileNotFoundException;
 
 import org.apache.commons.cli.CommandLine;
@@ -8,6 +9,7 @@ import org.apache.commons.cli.DefaultParser;
 import org.apache.commons.cli.HelpFormatter;
 import org.apache.commons.cli.Option;
 import org.apache.commons.cli.Options;
+
 import org.apache.commons.cli.ParseException;
 
 import application.gameoflife.LifeGrid;
@@ -24,6 +26,10 @@ public class Main {
 
 		Options options = new Options();
 
+		Option fileOption = new Option("f", "file", true, "The location of the seed file (RLE, Life 1.06, ");
+		fileOption.setRequired(false);
+		options.addOption(fileOption);
+		
 		Option heightOption = new Option("h", "height", true, "The height of the grid");
 		heightOption.setRequired(true);
 		options.addOption(heightOption);
@@ -32,9 +38,6 @@ public class Main {
 		widthOption.setRequired(true);
 		options.addOption(widthOption);
 
-		Option fileOption = new Option("f", "file", true, "The location of the seed file");
-		fileOption.setRequired(false);
-		options.addOption(fileOption);
 
 		Option textOption = new Option("t", "text", false, "Output the contents of the game to the console");
 		textOption.setRequired(false);
@@ -43,7 +46,6 @@ public class Main {
 		Option delayOption = new Option("d", "delay", true, "The number of miliseconds between each refresh");
 		delayOption.setRequired(false);
 		options.addOption(delayOption);
-
 		CommandLineParser parser = new DefaultParser();
 		HelpFormatter formatter = new HelpFormatter();
 		CommandLine cmd;
@@ -53,6 +55,9 @@ public class Main {
 		} catch (ParseException e) {
 			System.out.println(e.getMessage());
 			formatter.printHelp("GameOfLife", options);
+			System.out.println("\nSeed files can be provided in any of the following formats: RLE, Life (1.05, 1.06), RAW");
+			System.out.println("\nPlease use 'dot and star' or 'space and star' notation for RAW.");
+
 			System.exit(1);
 			return;
 		}
@@ -97,7 +102,7 @@ public class Main {
 	}
 
 	private static void launchText() throws InterruptedException, FileNotFoundException {
-		grid = new LifeGrid(x, y, file);
+		grid = new LifeGrid(x, y, (null != file)?new File(file):null);
 		grid.show();
 		int[][] delta;
 		do {

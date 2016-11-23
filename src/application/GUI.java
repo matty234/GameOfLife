@@ -1,23 +1,16 @@
 package application;
 
 
+import java.io.File;
+
 import application.gameoflife.LifeGrid;
 import javafx.animation.Animation;
 import javafx.animation.Animation.Status;
 import javafx.animation.KeyFrame;
 import javafx.animation.Timeline;
 import javafx.application.Application;
-import javafx.beans.value.ChangeListener;
-import javafx.beans.value.ObservableValue;
-import javafx.event.ActionEvent;
-import javafx.event.EventHandler;
 import javafx.scene.Scene;
-import javafx.scene.control.Menu;
-import javafx.scene.control.MenuBar;
-import javafx.scene.control.MenuItem;
 import javafx.scene.input.KeyCode;
-import javafx.scene.input.KeyCombination;
-import javafx.scene.layout.TilePane;
 import javafx.stage.Stage;
 import javafx.util.Duration;
 
@@ -36,16 +29,18 @@ public class GUI extends Application {
 		this.primaryStage = primaryStage;
 		try {
 			System.out.println("Loading GUI. This could take a while.");
-			grid = new LifeGrid(x, y, file);
-			board = new BoardGUI(grid, x, y);
+			grid = new LifeGrid(x, y, (null != file)?new File(file):null);
+			board = new BoardGUI(grid);
 			Scene scene = new Scene(board.getTilePane());
 			primaryStage.setScene(scene);
 			primaryStage.show();
 			
+			
+			primaryStage.setResizable(false);
 			double defaultWidth = primaryStage.getWidth();
 			double defaultHeight = primaryStage.getHeight();
 			
-			
+			/*
 			primaryStage.widthProperty().addListener(new ChangeListener<Number>() {
 			    @Override public void changed(ObservableValue<? extends Number> observableValue, Number oldVal, Number newVal) {
 					board.setTileWidth((newVal.longValue() / defaultWidth) * BoardGUI.DEFAULT_TILE_DIME);
@@ -58,7 +53,9 @@ public class GUI extends Application {
 					board.setTileSpacingHeight((newVal.longValue() / defaultWidth) * BoardGUI.DEFAULT_TILE_SPACING);
 			    }
 			});
-	
+			*/
+			
+			
 			primaryStage.setTitle("Game Of Life");
 			
 			Timeline loop = new Timeline(new KeyFrame(Duration.millis(delay), e -> {

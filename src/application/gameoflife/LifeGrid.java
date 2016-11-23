@@ -4,32 +4,30 @@ import java.io.FileNotFoundException;
 import java.util.Arrays;
 import java.util.Scanner;
 
+import application.filereaders.LifeReader;
+import application.filereaders.RAWReader;
+import application.filereaders.RLEReader;
+
 public class LifeGrid {
 	int[][] grid;
 	int generation = 0;
 	int width;
 	int height;
-	
-	public LifeGrid(int x, int y, String seedFile) throws FileNotFoundException {
+
+	public LifeGrid(int x, int y, File seedFile) throws FileNotFoundException {
 		this.height = y;
 		this.width = x;
 		grid = new int[y][x];
-		System.out.println(grid[1].length);
+
 		if(null == seedFile) this.randomise();
 		else readSeed(seedFile);
 	}
 	
-	private void readSeed(String fileName) throws FileNotFoundException {
-		Scanner scanner = new Scanner(new File(fileName));
-		int j = 0;
-		while (scanner.hasNext()&& !(j > height)) {
-			char[] rowString = scanner.nextLine().toCharArray();
-			for (int i = 0; i < width; i++) {
-				grid[j][i] = (rowString.length > i && rowString[i] == '*')?1:0;
-			}
-			j++;
-		}
-		scanner.close();
+	private void readSeed(File file) throws FileNotFoundException {
+		LifeReader reader = (RLEReader.isFileRLE(file)) ? new RLEReader(file) : new RAWReader(file, width, height);
+		this.grid = reader.getGrid();
+		this.width = reader.getX();
+		this.height = reader.getY();
 	}
 	
 	public boolean show() {
