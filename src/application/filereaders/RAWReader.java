@@ -2,6 +2,8 @@ package application.filereaders;
 
 import java.io.File;
 import java.io.FileNotFoundException;
+import java.io.FileReader;
+import java.io.LineNumberReader;
 import java.util.Scanner;
 
 public class RAWReader implements LifeReader{
@@ -15,17 +17,32 @@ public class RAWReader implements LifeReader{
 		this.y = y;
 		read();
 	}
+	
+	public RAWReader(File file) throws FileNotFoundException {
+		this.file = file;
+		
+		read();
+	}
+
 
 	private void read() throws FileNotFoundException {
 		grid = new int[y][x];
 		Scanner scanner = new Scanner(file);
-		int j = 0;
-		while (scanner.hasNext()&& !(j > y)) {
+		int yLen = 0;
+		int xLen = 0;
+		while (scanner.hasNext()) {
 			char[] rowString = scanner.nextLine().toCharArray();
-			for (int i = 0; i < x; i++) {
-				grid[j][i] = (rowString.length > i && rowString[i] == '*')?1:0;
+			for (int i = 0; i < rowString.length; i++) {
+				grid[yLen][i] = (rowString[i] == '*')?1:0;
 			}
-			j++;
+			xLen = rowString.length;
+			yLen++;
+		}
+		
+		if(x == 0 || y == 0) {
+			y = yLen;
+			x = xLen;
+			
 		}
 		scanner.close();
 	}

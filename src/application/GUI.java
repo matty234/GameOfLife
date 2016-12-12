@@ -9,6 +9,8 @@ import javafx.animation.Animation.Status;
 import javafx.animation.KeyFrame;
 import javafx.animation.Timeline;
 import javafx.application.Application;
+import javafx.beans.value.ChangeListener;
+import javafx.beans.value.ObservableValue;
 import javafx.scene.Scene;
 import javafx.scene.input.KeyCode;
 import javafx.stage.Stage;
@@ -36,11 +38,11 @@ public class GUI extends Application {
 			primaryStage.show();
 			
 			
-			primaryStage.setResizable(false);
+			primaryStage.setResizable(true);
 			double defaultWidth = primaryStage.getWidth();
 			double defaultHeight = primaryStage.getHeight();
 			
-			/*
+			
 			primaryStage.widthProperty().addListener(new ChangeListener<Number>() {
 			    @Override public void changed(ObservableValue<? extends Number> observableValue, Number oldVal, Number newVal) {
 					board.setTileWidth((newVal.longValue() / defaultWidth) * BoardGUI.DEFAULT_TILE_DIME);
@@ -53,11 +55,10 @@ public class GUI extends Application {
 					board.setTileSpacingHeight((newVal.longValue() / defaultWidth) * BoardGUI.DEFAULT_TILE_SPACING);
 			    }
 			});
-			*/
+			
 			
 			
 			primaryStage.setTitle("Game Of Life");
-			
 			Timeline loop = new Timeline(new KeyFrame(Duration.millis(delay), e -> {
 				boardStep();
 			}));
@@ -69,6 +70,8 @@ public class GUI extends Application {
 	        scene.setOnKeyPressed((keyEvent) -> {
 	        	if(keyEvent.getCode() == KeyCode.P && loop.getStatus() == Status.RUNNING ) {
 	        		loop.pause();
+	        	} else if (keyEvent.getCode() == KeyCode.P) {
+	        		loop.play();
 	        	} else if(keyEvent.getCode() == KeyCode.S) {
 	        		loop.pause();
 	        		boardStep();
@@ -77,9 +80,7 @@ public class GUI extends Application {
 	        	} else if(keyEvent.getCode() == KeyCode.I) {
 	        		grid.randomise();
 	        		loop.play();
-	        	}else {
-	        		loop.play();
-	        	}
+	        	} 
 	        });
 		} catch (Exception e) {
 			e.printStackTrace();

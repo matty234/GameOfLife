@@ -54,9 +54,9 @@ public class Main {
 			cmd = parser.parse(options, args);
 		} catch (ParseException e) {
 			System.out.println(e.getMessage());
-			formatter.printHelp("GameOfLife", options);
+			formatter.printHelp("java -jar GameOfLife.jar", options);
 			System.out.println("\nSeed files can be provided in any of the following formats: RLE, Life (1.05, 1.06), RAW");
-			System.out.println("\nPlease use 'dot and star' or 'space and star' notation for RAW.");
+			System.out.println("Please use 'dot and star' or 'space and star' notation for RAW.\n");
 
 			System.exit(1);
 			return;
@@ -104,12 +104,10 @@ public class Main {
 	private static void launchText() throws InterruptedException, FileNotFoundException {
 		grid = new LifeGrid(x, y, (null != file)?new File(file):null);
 		grid.show();
-		int[][] delta;
 		do {
 			Thread.sleep(delay);
-			delta = grid.runDelta();
-
-		} while (grid.showDelta(delta));
+			grid.run();
+		} while (grid.show());
 	}
 
 }

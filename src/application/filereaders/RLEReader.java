@@ -47,8 +47,8 @@ public class RLEReader implements LifeReader{
 			}
 			String[] headerItems = header.split(",");
 			for (int i = 0; i < headerItems.length; i++) {
-				if(headerItems[i].contains("x =")) 		 this.x = Integer.parseInt(headerItems[i].replaceAll("\\D+",""));
-				else if(headerItems[i].contains("y ="))  this.y = Integer.parseInt(headerItems[i].replaceAll("\\D+",""));
+				if(headerItems[i].contains("x =")) this.x = Integer.parseInt(headerItems[i].replaceAll("\\D+",""));
+				else if(headerItems[i].contains("y =")) this.y = Integer.parseInt(headerItems[i].replaceAll("\\D+",""));
 				else if(headerItems[i].contains("rule =")){
 					Pattern pattern = Pattern.compile("[A-Z 1-9]{2}\\/[A-Z 1-9]{3}");
 					Matcher matcher = pattern.matcher(headerItems[i]);

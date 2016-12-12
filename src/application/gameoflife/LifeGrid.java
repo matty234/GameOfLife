@@ -24,6 +24,7 @@ public class LifeGrid {
 	}
 	
 	private void readSeed(File file) throws FileNotFoundException {
+		// RLEReader ignores the given X, Y attributes here
 		LifeReader reader = (RLEReader.isFileRLE(file)) ? new RLEReader(file) : new RAWReader(file, width, height);
 		this.grid = reader.getGrid();
 		this.width = reader.getX();
@@ -33,12 +34,12 @@ public class LifeGrid {
 	public boolean show() {
 		boolean seen = false;
 		System.out.println("Generation: "+this.generation);
-		String topRow = (grid.length > 0)?new String(new char[(2*grid[0].length)+3]).replace("\0", "-"):"";
+		String topRow = (grid.length > 0)?new String(new char[(2*grid[0].length)+4]).replace("\0", "-"):"";
 		System.out.println(topRow);
 		for (int i = 0; i < grid.length; i++) {
-			System.out.print("|");
+			System.out.print("| ");
 			for (int j = 0; j < grid[i].length; j++) {
-				System.out.print(" "+grid[i][j]);
+				System.out.print(((grid[i][j] > 0)?"* ":"  "));
 				if(!seen && grid[i][j] > 0) seen = true;
 			}
 			System.out.println(" |");
@@ -55,7 +56,7 @@ public class LifeGrid {
 		for (int i = 0; i < delta.length; i++) {
 			System.out.print("|");
 			for (int j = 0; j < delta[i].length; j++) {
-				System.out.print(" "+delta[i][j]);
+				System.out.print(" "+(getAtPoint(j, i)));
 				if(!seen && delta[i][j] > 0) seen = true;
 			}
 			System.out.println(" |");
@@ -156,6 +157,10 @@ public class LifeGrid {
 
 	public int getHeight() {
 		return height;
+	}
+	
+	public char getAtPoint(int x, int y) {
+		return (grid[y][x] == 1 || grid[y][x] == 2)?'*':' ';
 	}
 
 	public int toggleCell(int x, int y) {
