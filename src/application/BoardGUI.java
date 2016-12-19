@@ -16,6 +16,7 @@ public class BoardGUI {
 
 	
 	private GridPane gridPane = new GridPane();
+	
 	private LifeGrid grid;
 	private int width;
 	private int height;
@@ -85,7 +86,8 @@ public class BoardGUI {
 		}
 	}
 
-	public GridPane getTilePane() {
+	public GridPane getGridPane() {
+		gridPane.getStyleClass().add("tilePane");
 		return gridPane;
 	}
 

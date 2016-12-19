@@ -1,1 +1,11 @@
-/* JavaFX CSS - Leave this comment until you have at least create one rule which uses -fx-Property */
+
+.tilePane {
+    -fx-background-color:  black;
+}
+    .pane{
+        -fx-background-color:  black;
+    }
+.button {
+	-fx-max-width: ;
+}
+
