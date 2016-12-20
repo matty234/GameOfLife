@@ -4,6 +4,8 @@ import application.gameoflife.LifeGrid;
 import javafx.event.EventHandler;
 import javafx.geometry.Insets;
 import javafx.scene.Node;
+import javafx.scene.canvas.Canvas;
+import javafx.scene.canvas.GraphicsContext;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.GridPane;
 import javafx.scene.paint.Color;
@@ -15,39 +17,46 @@ public class BoardGUI {
 	public static int DEFAULT_TILE_SPACING = 2;
 
 	
-	private GridPane gridPane = new GridPane();
-	
+	private Canvas canvas;
+	private GraphicsContext gc;
 	private LifeGrid grid;
 	private int width;
 	private int height;
 
 	private double tileSpacingHeight = DEFAULT_TILE_SPACING;
 	private double tileSpacingWidth = DEFAULT_TILE_SPACING;
-
+	private int squareDime = 0;
 
 	private double tileWidth = DEFAULT_TILE_DIME;
 	private double tileHeight = DEFAULT_TILE_DIME;
 
-	public BoardGUI(LifeGrid grid, int spacing) {
-		this(grid);
+	public BoardGUI(LifeGrid grid, int squareDime, int spacing) {
+		this(grid, squareDime);
 		this.tileSpacingHeight = spacing;
 		this.tileSpacingWidth = spacing;
 
 	}
 	
-	public BoardGUI(LifeGrid grid) {
+	public BoardGUI(LifeGrid grid, int squareDime) {
+		this.squareDime = squareDime;
 		this.grid = grid;
-		
 		width = grid.getWidth();
 		height = grid.getHeight();
+		this.canvas = new Canvas(width*squareDime, height*squareDime);
+		this.gc = canvas.getGraphicsContext2D();
+		canvas.setOnMouseClicked(new CellClickHandler());
+		canvas.setOnMouseDragged(new CellClickHandler());
 		for (int j = 0; j < grid.getHeight(); j++) {
 			int[] row = grid.row(j);
 			for (int i = 0; i < grid.getWidth(); i++) {
-				Rectangle r = new Rectangle(tileWidth, tileHeight, getRectangleColor(row[i])); 
+				gc.setFill(getRectangleColor(row[i]));
+				gc.fillRect(squareDime * j, squareDime * i, squareDime, squareDime);
+				
+				/*Rectangle r = new Rectangle(tileWidth, tileHeight, getRectangleColor(row[i])); 
 				r.setOnMouseEntered(new CellClickHandler(i, j, false));
 				r.setOnMouseClicked(new CellClickHandler(i, j, true));
-				gridPane.add(r, i, j);
-				GridPane.setMargin(r, new Insets(tileSpacingWidth, tileSpacingWidth, tileSpacingHeight, tileSpacingWidth));
+				gridPane.add(r, i, j);*/
+				//GridPane.setMargin(r, new Insets(tileSpacingWidth, tileSpacingWidth, tileSpacingHeight, tileSpacingWidth));
 			}
 		}
 	}
@@ -55,15 +64,20 @@ public class BoardGUI {
 	public void updateBoard(int[][] gridUpdate) {
 		for (int j = 0; j < gridUpdate.length; j++) {
 			for (int i = 0; i < gridUpdate[j].length; i++) {
+				System.out.println(gridUpdate[j][i] != 3);
 				if(gridUpdate[j][i] != 3) {
-					Rectangle r = (Rectangle) gridPane.getChildren().get(((width * j) + i));
-					Color cl = getRectangleColor(gridUpdate[j][i]);
-					r.setFill(cl);
+					//Rectangle r = (Rectangle) gridPane.getChildren().get(((width * j) + i));
+					gc.setFill(getRectangleColor(gridUpdate[j][i]));
+					gc.fillRect(squareDime * j, squareDime * i, squareDime, squareDime);
+					
+					
+					//Color cl = getRectangleColor(gridUpdate[j][i]);
+					//r.setFill(cl);
 				}
 			}
 		}
 	}
-	public void updateCellSize() {
+	/*public void updateCellSize() {
 		for (int j = 0; j < height; j++) {
 			for (int i = 0; i < width; i++) {
 				Rectangle r = (Rectangle) gridPane.getChildren().get(((width * j) + i));
@@ -72,7 +86,7 @@ public class BoardGUI {
 				GridPane.setMargin(r, new Insets(tileSpacingWidth, tileSpacingWidth, tileSpacingHeight, tileSpacingWidth));
 			}
 		}
-	}
+	}*/
 	Color getRectangleColor(int i) {
 		switch (i) {
 		case 0:
@@ -86,9 +100,9 @@ public class BoardGUI {
 		}
 	}
 
-	public GridPane getGridPane() {
-		gridPane.getStyleClass().add("tilePane");
-		return gridPane;
+	public Canvas getCanvas() {
+		canvas.getStyleClass().add("canvasPane");
+		return canvas;
 	}
 
 	public double getTileWidth() {
@@ -101,12 +115,12 @@ public class BoardGUI {
 
 	public void setTileWidth(double tileWidth) {
 		this.tileWidth = tileWidth;
-		updateCellSize();
+		//updateCellSize();
 	}
 
 	public void setTileHeight(double tileHeight) {
 		this.tileHeight = tileHeight;
-		updateCellSize();
+		//updateCellSize();
 	}
 
 	public double getTileSpacingHeight() {
@@ -119,33 +133,29 @@ public class BoardGUI {
 
 	public void setTileSpacingHeight(double d) {
 		this.tileSpacingHeight = d;
-		updateCellSize();
+		//updateCellSize();
 	}
 
 	public void setTileSpacingWidth(double d) {
 		this.tileSpacingWidth = d;
-		updateCellSize();
+		//updateCellSize();
 	}
 	
 	private class CellClickHandler implements EventHandler<MouseEvent> {
-		int x;
-		int y;
-		boolean alwaysEnable;
 		
-		public CellClickHandler(int x, int y, boolean alwaysEnable) {
-			this.x = x;
-			this.y = y;
-			this.alwaysEnable = alwaysEnable;
-		}
 		
 		@Override
 		public void handle(MouseEvent event) {
-			if(event.isShiftDown()||alwaysEnable){
-				int f = grid.toggleCell(x, y);
-				Rectangle r = (Rectangle) gridPane.getChildren().get(((width * y) + x));
+			try {	
+			int f = grid.toggleCell( (int) event.getY()/squareDime, (int) event.getX()/squareDime);
 				Color cl = getRectangleColor(f);
-				r.setFill(cl);
+				
+				gc.setFill(cl);
+				gc.fillRect(event.getX() - event.getX()%squareDime, event.getY() - event.getY()%squareDime, squareDime, squareDime);
+			} catch (ArrayIndexOutOfBoundsException e) {
+				//Ignore, faster to error and ignore than check.
 			}
+			
 		}
 	}
 }

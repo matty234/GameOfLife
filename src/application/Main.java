@@ -103,7 +103,7 @@ public class Main {
 
 	private static void launchText() throws InterruptedException, FileNotFoundException {
 		grid = new LifeGrid(x, y, (null != file)?new File(file):null);
-		grid.show();
+		//grid.showDelta(delta)();
 		do {
 			Thread.sleep(delay);
 			grid.run();

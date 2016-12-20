@@ -27,7 +27,7 @@ public class CustomFooter extends HBox {
 		VBox vBox = new VBox(2, generationText, generationTextValue );
 		t.add(vBox);
 
-		Slider slider = new Slider(60, 1000, currentRefresh);
+		Slider slider = new Slider(30, 1000, currentRefresh);
 		t.add(slider);
 		slider.setShowTickMarks(true);
 		slider.setShowTickLabels(true);

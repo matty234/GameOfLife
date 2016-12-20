@@ -39,7 +39,7 @@ public class GUI extends Application {
 		this.primaryStage = primaryStage;
 		try {
 			grid = new LifeGrid(x, y, (null != file) ? new File(file) : null);
-			board = new BoardGUI(grid);
+			board = new BoardGUI(grid, 5);
 
 
 			VBox settingsPane = new VBox(10);
@@ -49,7 +49,7 @@ public class GUI extends Application {
 			resumeButton.setDisable(true);
 			Button stepButton = new Button("Step");
 			Button randomiseButton = new Button("Randomise");
-			Label infoText = new Label("Click or press shift and hover to make a cell alive");
+			Label infoText = new Label("Click or drag to make a cell alive");
 			
 			pauseButton.setMaxWidth(Double.MAX_VALUE);
 			resumeButton.setMaxWidth(Double.MAX_VALUE);
@@ -68,7 +68,7 @@ public class GUI extends Application {
 			settingsPane.getChildren().add(infoText);
 
 			BorderPane borderPane = new BorderPane(settingsPane, null, null, footer,
-					board.getGridPane());
+					board.getCanvas());
 			borderPane.getStylesheets().add("http://pastebin.com/raw/c3ndLLFP");
 			Scene mainScene = new Scene(borderPane);
 			primaryStage.setScene(mainScene);
