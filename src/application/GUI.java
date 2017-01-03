@@ -3,6 +3,7 @@ package application;
 import java.io.File;
 
 import application.CustomFooter.RefreshChangeListener;
+import application.MoveButton.MoveDirection;
 import application.gameoflife.LifeGrid;
 import javafx.animation.Animation;
 import javafx.animation.Animation.Status;
@@ -16,7 +17,7 @@ import javafx.scene.control.Label;
 import javafx.scene.input.KeyCode;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.BorderPane;
-import javafx.scene.layout.GridPane;
+import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
 import javafx.stage.Stage;
 import javafx.util.Duration;
@@ -38,8 +39,13 @@ public class GUI extends Application {
 	public void start(Stage primaryStage) {
 		this.primaryStage = primaryStage;
 		try {
-			grid = new LifeGrid(x, y, (null != file) ? new File(file) : null);
-			board = new BoardGUI(grid, 5);
+			if(null == file) {
+				grid = new LifeGrid(x, y);
+			} else {
+				grid = new LifeGrid(new File(file), x, y);
+			}
+			
+			board = new BoardGUI(grid, 1, 2);
 
 
 			VBox settingsPane = new VBox(10);
@@ -49,6 +55,10 @@ public class GUI extends Application {
 			resumeButton.setDisable(true);
 			Button stepButton = new Button("Step");
 			Button randomiseButton = new Button("Randomise");
+			
+			Button zoomInButton = new Button("+");
+			Button zoomOutButton = new Button("-");
+			
 			Label infoText = new Label("Click or drag to make a cell alive");
 			
 			pauseButton.setMaxWidth(Double.MAX_VALUE);
@@ -65,6 +75,14 @@ public class GUI extends Application {
 			settingsPane.getChildren().add(stepButton);
 			settingsPane.getChildren().add(randomiseButton);
 			
+			MoveButton moveButton = new MoveButton(new SceneMoveChanged());
+			
+			HBox zoomBox = new HBox(zoomOutButton, zoomInButton);
+			
+			
+			settingsPane.getChildren().add(moveButton);
+			settingsPane.getChildren().add(zoomBox);
+
 			settingsPane.getChildren().add(infoText);
 
 			BorderPane borderPane = new BorderPane(settingsPane, null, null, footer,
@@ -79,7 +97,7 @@ public class GUI extends Application {
 			 * example, the title bar is taken into account on MacOS but not
 			 * Windows.
 			 */
-			primaryStage.setResizable(false);
+			primaryStage.setResizable(true);
 			/*
 			 * double defaultWidth = primaryStage.getWidth(); double
 			 * defaultHeight = primaryStage.getHeight();
@@ -107,14 +125,14 @@ public class GUI extends Application {
 
 			primaryStage.setTitle("Game Of Life");
 			Timeline loop = new Timeline(new KeyFrame(Duration.millis(delay), e -> {
-				boardStep();
+				boardStep(true);
 			}));
 			footer.setRefreshChangeListener(new RefreshChangeListener() {
 				@Override
 				public void onChange(int value) {
 					loop.stop();
 					loop.getKeyFrames().setAll(new KeyFrame(Duration.millis(value), e -> {
-						boardStep();
+						boardStep(true);
 					}));
 					loop.play();
 				}
@@ -132,7 +150,7 @@ public class GUI extends Application {
 					pauseButton.setDisable(false);
 					resumeButton.setDisable(true);
 				} else if (keyEvent.getCode() == KeyCode.S) {
-					boardStep();
+					boardStep(true);
 				} else if (keyEvent.getCode() == KeyCode.C) {
 					grid.show();
 				} else if (keyEvent.getCode() == KeyCode.R) {
@@ -155,7 +173,7 @@ public class GUI extends Application {
 				@Override
 				public void handle(MouseEvent event) {
 					loop.pause();
-					boardStep();
+					boardStep(true);
 				}
 			});
 			pauseButton.setOnMousePressed(new EventHandler<MouseEvent>() {
@@ -174,15 +192,79 @@ public class GUI extends Application {
 					resumeButton.setDisable(true);
 				}
 			});
+			
+			
+			zoomInButton.setOnMousePressed(new EventHandler<MouseEvent>() {
+
+				@Override
+				public void handle(MouseEvent event) {
+					board.zoomIn();
+					boardStep(false);
+				}
+			});
+			
+			zoomOutButton.setOnMousePressed(new EventHandler<MouseEvent>() {
+
+				@Override
+				public void handle(MouseEvent event) {
+					board.zoomOut();
+					boardStep(false);
+				}
+			});
+			
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
 	}
 
-	private void boardStep() {
+	private class SceneMoveChanged implements MoveButton.OnMoveChanged {
 
-		int[][] newGrid = grid.run();
-		board.updateBoard(newGrid);
+		@Override
+		public void direction(MoveDirection direction) {
+			switch(direction) {
+			case Down:
+				board.incYOffset();
+				break;
+			case Left:
+				board.decXOffset();
+				break;
+			case LeftDown:
+				board.decXOffset();
+				board.incXOffset();
+				break;
+			case LeftUp:
+				board.decXOffset();
+				board.decYOffset();
+				break;
+			case Right:
+				board.incXOffset();
+				break;
+			case RightDown:
+				board.incXOffset();
+				board.incYOffset();
+				break;
+			case RightUp:
+				board.incXOffset();
+				board.decYOffset();
+				break;
+			case Up:
+				board.decYOffset();
+				break;
+			default:
+				break;
+			}
+			boardStep(false);
+		}
+		
+	}
+	private void boardStep(boolean useDelta) {
+		if(useDelta) {
+			int[][] newGrid = grid.runDelta();
+			board.updateBoard(newGrid);
+		} else {
+			int[][] newGrid = grid.run();
+			board.updateBoard(newGrid);
+		}
 		footer.setGeneration(grid.getGeneration());
 		primaryStage.setTitle("Game Of Life (generation: " + grid.getGeneration() + ")");
 	}

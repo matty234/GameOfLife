@@ -11,24 +11,29 @@ import application.filereaders.RLEReader;
 public class LifeGrid {
 	int[][] grid;
 	int generation = 0;
-	int width;
-	int height;
 
-	public LifeGrid(int x, int y, File seedFile) throws FileNotFoundException {
-		this.height = y;
-		this.width = x;
+	
+	public LifeGrid(int x, int y) {
 		grid = new int[y][x];
-
-		if(null == seedFile) this.randomise();
-		else readSeed(seedFile);
+		randomise();
 	}
 	
-	private void readSeed(File file) throws FileNotFoundException {
+	public LifeGrid(File seedFile, int x, int y) throws FileNotFoundException {
+		if(null == seedFile) {
+			grid = new int[y][x];
+			randomise();
+		} else {
+			readSeed(seedFile, x, y);
+		}
+	}
+
+	
+
+	private void readSeed(File file, int x, int y) throws FileNotFoundException {
 		// RLEReader ignores the given X, Y attributes here
-		LifeReader reader = (RLEReader.isFileRLE(file)) ? new RLEReader(file) : new RAWReader(file, width, height);
+		LifeReader reader = (RLEReader.isFileRLE(file)) ? new RLEReader(file) : new RAWReader(file, x, y);
 		this.grid = reader.getGrid();
-		this.width = reader.getX();
-		this.height = reader.getY();
+		
 	}
 	
 	public boolean show() {
@@ -56,7 +61,7 @@ public class LifeGrid {
 		for (int i = 0; i < delta.length; i++) {
 			System.out.print("|");
 			for (int j = 0; j < delta[i].length; j++) {
-				System.out.print(" "+(getAtPoint(j, i)));
+				System.out.print(" "+(delta[i][j]));
 				if(!seen && delta[i][j] > 0) seen = true;
 			}
 			System.out.println(" |");
@@ -66,12 +71,9 @@ public class LifeGrid {
 	}
 	
 	public int[][] run() {
-		int[][] newGrid = new int[height][width];
-
-
+		int[][] newGrid = new int[grid.length][grid[0].length];
 		for (int i = 0; i < newGrid.length; i++) {
 			for (int j = 0; j < newGrid[i].length; j++) {
-		
 				if(this.grid[i][j] > 0){
 					if(neighbours(j, i) < 2){
 						newGrid[i][j] = 0;
@@ -93,22 +95,22 @@ public class LifeGrid {
 		return newGrid;
 	}
 	public int[][] runDelta() {
-		int[][] deltaGrid = new int[height][width];
+		int[][] deltaGrid = new int[grid.length][grid[0].length];
 		int[][] originalGrid = run();
 		
-		for (int i = 0; i < height; i++) {
-			for (int j = 0; j < width; j++) {
-
+		for (int i = 0; i < originalGrid.length; i++) {
+			for (int j = 0; j < originalGrid[i].length; j++) {
 				if(originalGrid[i][j] > 0){
 					if(neighbours(j, i) < 2 && originalGrid[i][j] != 0){
 						deltaGrid[i][j] = 0;
 					} else if(neighbours(j, i) > 3 && originalGrid[i][j] != 0) {
 						deltaGrid[i][j] = 0;
-					} else if((neighbours(j, i) == 2 || neighbours(j, i) == 3) && originalGrid[i][j] != 1) {
+					} else if((neighbours(j, i) == 2 || neighbours(j, i) == 3) && originalGrid[i][j] != 2) {
 						deltaGrid[i][j] = 2;
 					} else {
 						deltaGrid[i][j] = 3;
 					}
+
 				} else {
 					if(neighbours(j, i) == 3 && originalGrid[i][j] != 1) {
 						deltaGrid[i][j] = 1;
@@ -122,41 +124,73 @@ public class LifeGrid {
 	}
 	
 	public int neighbours(int x, int y){
-		int n = 0;
-		if(isInGrid(y, x-1) && grid[y][x-1] > 0) n++;
-		if(isInGrid(y+1, x-1) && grid[y+1][x-1] > 0) n++;
-		if(isInGrid(y+1, x) && grid[y+1][x] > 0) n++;
-		if(isInGrid(y+1, x+1) && grid[y+1][x+1] > 0) n++;
-		if(isInGrid(y, x+1) && grid[y][x+1] > 0) n++;
-		if(isInGrid(y-1, x+1) && grid[y-1][x+1] > 0) n++;
-		if(isInGrid(y-1, x) && grid[y-1][x] > 0) n++;
-		if(isInGrid(y-1, x-1) && grid[y-1][x-1] > 0) n++;
-		return n;
+		try {
+			int n = 0;
+			if(isInGrid(y, x-1) && grid[y][x-1] > 0) n++;
+			if(isInGrid(y+1, x-1) && grid[y+1][x-1] > 0) n++;
+			if(isInGrid(y+1, x) && grid[y+1][x] > 0) n++;
+			if(isInGrid(y+1, x+1) && grid[y+1][x+1] > 0) n++;
+			if(isInGrid(y, x+1) && grid[y][x+1] > 0) n++;
+			if(isInGrid(y-1, x+1) && grid[y-1][x+1] > 0) n++;
+			if(isInGrid(y-1, x) && grid[y-1][x] > 0) n++;
+			if(isInGrid(y-1, x-1) && grid[y-1][x-1] > 0) n++;
+			return n;
+		} catch(ArrayIndexOutOfBoundsException e) {
+			System.out.println("err at: "+x+", "+y);
+			System.exit(0);
+		}
+		return 0;
+		
+	}
+	
+	public void growIfNeeded(int x, int y){
+		if(!isInGrid(y, x+1)) growGrid(1, 0);
+		else if(!isInGrid(y+1, x)) growGrid(0, 1);
+		else if(!isInGrid(y+1, x+1)) growGrid(1, 1);
 	}
 	
 	private boolean isInGrid(int y, int x) {
-	    return !(x < 0 || y < 0)&&!(x >= width || y >= height);
+	    return !(x < 0 || y < 0)&&!(x >= grid.length || y >= grid[0].length);
 	}
 	
 	private void growGrid(int x, int y) {
-		for (int i = 0; i < grid.length; i++) {
-			if(y != 0)
-				grid = Arrays.copyOf(grid, grid.length + y);
-			int[] gridRow = grid[i];
-			if(x != 0)
-				for (int j = 0; j < gridRow.length; j++) {
-					grid[i] = Arrays.copyOf(grid[i], grid[i].length + x);
+		
+		/*grid = Arrays.copyOf(grid, grid.length+1);
+		grid[grid.length] = new int[grid[0].length];*/
+		
+		
+		
+		/*for (int j = 0; j < grid.length; j++) {
+			int[] newY = new int[grid[j].length];
+			System.arraycopy(grid[j], 0, newY, 0, grid[j].length + 1);
+			grid[j] = newY;
+		}  */
+		
+		
+		/*for (int i = 0; i < grid.length; i++) {
+			/*if(y != 0)
+				grid = Arrays.copyOf(grid, grid.length + 1);*/
+		/*	if(x != 0) {
+				for (int j = 0; j < grid[i].length; j++) {
+					grid[i] = Arrays.copyOf(grid[i], grid[i].length + 1);
 				}
-		}
+			}
+				
+		}*/
 	}
+	
+	
+	   public void resize(int cols, int rows) {
+	    
+	    }
 
 
 	public int getWidth() {
-		return width;
+		return grid.length;
 	}
 
 	public int getHeight() {
-		return height;
+		return grid[0].length;
 	}
 	
 	public char getAtPoint(int x, int y) {
@@ -183,5 +217,4 @@ public class LifeGrid {
 		}
 		generation = 0;
 	}
-
 }

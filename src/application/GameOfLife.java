@@ -14,7 +14,7 @@ import org.apache.commons.cli.ParseException;
 
 import application.gameoflife.LifeGrid;
 
-public class Main {
+public class GameOfLife {
 	static LifeGrid grid;
 	static int x;
 	static int y;
@@ -102,8 +102,13 @@ public class Main {
 	}
 
 	private static void launchText() throws InterruptedException, FileNotFoundException {
-		grid = new LifeGrid(x, y, (null != file)?new File(file):null);
-		//grid.showDelta(delta)();
+		if(null == file) {
+			grid = new LifeGrid(x, y);
+		} else {
+			grid = new LifeGrid(new File(file), x, y);
+		}
+		grid.show();
+		int[][] d;
 		do {
 			Thread.sleep(delay);
 			grid.run();

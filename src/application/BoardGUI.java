@@ -20,8 +20,8 @@ public class BoardGUI {
 	private Canvas canvas;
 	private GraphicsContext gc;
 	private LifeGrid grid;
-	private int width;
-	private int height;
+	private int initialWidth;
+	private int initialHeight;
 
 	private double tileSpacingHeight = DEFAULT_TILE_SPACING;
 	private double tileSpacingWidth = DEFAULT_TILE_SPACING;
@@ -30,49 +30,45 @@ public class BoardGUI {
 	private double tileWidth = DEFAULT_TILE_DIME;
 	private double tileHeight = DEFAULT_TILE_DIME;
 
-	public BoardGUI(LifeGrid grid, int squareDime, int spacing) {
-		this(grid, squareDime);
+	private int xOffset = 0;
+	private int yOffset = 0;
+	
+	private int xVisible;
+	private int yVisible;
+	
+	private int zoom = 1;
+	public BoardGUI(LifeGrid grid, int zoom, int squareDime, int spacing) {
+		this(grid, zoom, squareDime);
 		this.tileSpacingHeight = spacing;
 		this.tileSpacingWidth = spacing;
 
 	}
 	
-	public BoardGUI(LifeGrid grid, int squareDime) {
-		this.squareDime = squareDime;
+	public BoardGUI(LifeGrid grid, int zoom,  int squareDime) {
 		this.grid = grid;
-		width = grid.getWidth();
-		height = grid.getHeight();
-		this.canvas = new Canvas(width*squareDime, height*squareDime);
+		initialWidth = grid.getWidth();
+		initialHeight = grid.getHeight();
+		
+		this.zoom = zoom;
+		this.squareDime = squareDime * zoom;
+		xVisible = initialWidth / this.zoom;
+		yVisible = initialHeight / this.zoom;
+		
+		this.canvas = new Canvas(xVisible*squareDime, yVisible*squareDime);
 		this.gc = canvas.getGraphicsContext2D();
 		canvas.setOnMouseClicked(new CellClickHandler());
 		canvas.setOnMouseDragged(new CellClickHandler());
-		for (int j = 0; j < grid.getHeight(); j++) {
-			int[] row = grid.row(j);
-			for (int i = 0; i < grid.getWidth(); i++) {
-				gc.setFill(getRectangleColor(row[i]));
-				gc.fillRect(squareDime * j, squareDime * i, squareDime, squareDime);
-				
-				/*Rectangle r = new Rectangle(tileWidth, tileHeight, getRectangleColor(row[i])); 
-				r.setOnMouseEntered(new CellClickHandler(i, j, false));
-				r.setOnMouseClicked(new CellClickHandler(i, j, true));
-				gridPane.add(r, i, j);*/
-				//GridPane.setMargin(r, new Insets(tileSpacingWidth, tileSpacingWidth, tileSpacingHeight, tileSpacingWidth));
-			}
-		}
+
+		updateBoard(grid.run());
 	}
 
 	public void updateBoard(int[][] gridUpdate) {
-		for (int j = 0; j < gridUpdate.length; j++) {
-			for (int i = 0; i < gridUpdate[j].length; i++) {
-				System.out.println(gridUpdate[j][i] != 3);
+		for (int j = yOffset; j < yVisible + yOffset; j++) {
+			for (int i = xOffset; i < xVisible + xOffset; i++) {
 				if(gridUpdate[j][i] != 3) {
 					//Rectangle r = (Rectangle) gridPane.getChildren().get(((width * j) + i));
 					gc.setFill(getRectangleColor(gridUpdate[j][i]));
-					gc.fillRect(squareDime * j, squareDime * i, squareDime, squareDime);
-					
-					
-					//Color cl = getRectangleColor(gridUpdate[j][i]);
-					//r.setFill(cl);
+					gc.fillRect(squareDime * (i-xOffset), squareDime * (j-yOffset), squareDime, squareDime);
 				}
 			}
 		}
@@ -146,16 +142,89 @@ public class BoardGUI {
 		
 		@Override
 		public void handle(MouseEvent event) {
-			try {	
-			int f = grid.toggleCell( (int) event.getY()/squareDime, (int) event.getX()/squareDime);
-				Color cl = getRectangleColor(f);
-				
-				gc.setFill(cl);
-				gc.fillRect(event.getX() - event.getX()%squareDime, event.getY() - event.getY()%squareDime, squareDime, squareDime);
-			} catch (ArrayIndexOutOfBoundsException e) {
-				//Ignore, faster to error and ignore than check.
+
+			if (event.getClickCount() == 2) {
+				zoomIn();
+			} else {
+				try {
+					 grid.toggleCell(((int) event.getX() / squareDime + xOffset),
+							((int) event.getY() / squareDime + yOffset));
+					 Color cl = Color.BLACK;
+					 gc.setFill(cl);
+					 gc.fillRect( event.getX() - event.getX()%squareDime, event.getY() - event.getY() % squareDime, squareDime, squareDime);
+				} catch (ArrayIndexOutOfBoundsException e) {
+					// Ignore, faster to error and ignore than check.
+				}
+
+			}
+			 
+			
+		}
+	}
+	
+
+	private void setXOffset(int xOffset) {
+		if(xOffset < grid.getWidth() - xVisible  && xOffset >= 0) {
+			gc.clearRect(0, 0, initialWidth*squareDime, initialHeight*squareDime);
+			this.xOffset = xOffset;
+		} else {
+			System.out.println("Reached end of grid");
+		}
+	}
+
+	private void setYOffset(int yOffset) {
+		if(yOffset < grid.getHeight() - yVisible && yOffset >= 0) {
+			gc.clearRect(0, 0, initialWidth*squareDime, initialHeight*squareDime);
+			this.yOffset = yOffset;
+		} else {
+			System.out.println("Reached end of grid");
+		}
+	}
+	
+	public void incYOffset(){
+		setYOffset(yOffset + 1); 
+	}
+	public void incXOffset(){
+		setXOffset(xOffset + 1); 
+	}
+	
+	public void decYOffset(){
+		setYOffset(yOffset - 1); 
+	}
+	public void decXOffset(){
+		setXOffset(xOffset - 1); 
+	}
+	
+	public void zoomIn() {
+		if(zoom < 10) {
+	
+			gc.clearRect(0, 0, initialWidth*squareDime, initialHeight*squareDime); 
+			this.zoom ++;
+			this.squareDime = squareDime * zoom;
+			xVisible = initialWidth / zoom;
+			yVisible = initialHeight / zoom;
+		}
+	}
+	
+	public void zoomOut() { //Doesn't work atms
+		if(zoom > 1) {
+			gc.clearRect(0, 0, initialWidth*squareDime, initialHeight*squareDime);
+
+			this.squareDime = squareDime * 1/ zoom;
+			
+			this.zoom --;
+			
+		
+			xVisible = initialWidth * zoom;
+			yVisible = initialHeight * zoom;
+			
+			if(zoom == 1) {
+				yOffset = 0;
+				xOffset = 0;
 			}
 			
+
+
 		}
 	}
 }
