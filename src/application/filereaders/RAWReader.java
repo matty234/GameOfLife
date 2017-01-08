@@ -37,7 +37,7 @@ public class RAWReader implements LifeReader{
 				dirtyQuit();
 			} else {
 				for (int i = 0; i < rowString.length; i++) {
-					grid[yLen][i] = (rowString[i] == '*')?1:0;
+					grid[yLen][i] = (rowString[i] == '*' || rowString[i] == 'O')?1:0;
 				}
 			}
 			xLen = rowString.length;

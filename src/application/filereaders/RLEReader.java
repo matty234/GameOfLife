@@ -11,13 +11,19 @@ import java.util.regex.Pattern;
 public class RLEReader implements LifeReader{
 	int x;
 	int y; 
+	
+	int recX;
+	int recY; 
+	
 	int[][] grid;
 	String rule;
 	File file;
 	String name;
 	
-	public RLEReader(File file) throws FileNotFoundException {
+	public RLEReader(File file, int x, int y) throws FileNotFoundException {
 		this.file = file;
+		this.x = x;
+		this.y = y;
 		read();
 	}
 	
@@ -47,8 +53,8 @@ public class RLEReader implements LifeReader{
 			}
 			String[] headerItems = header.split(",");
 			for (int i = 0; i < headerItems.length; i++) {
-				if(headerItems[i].contains("x =")) this.x = Integer.parseInt(headerItems[i].replaceAll("\\D+",""));
-				else if(headerItems[i].contains("y =")) this.y = Integer.parseInt(headerItems[i].replaceAll("\\D+",""));
+				if(headerItems[i].contains("x =")) this.recX = Integer.parseInt(headerItems[i].replaceAll("\\D+","")) + 1;
+				else if(headerItems[i].contains("y =")) this.recY = Integer.parseInt(headerItems[i].replaceAll("\\D+","")) + 1;
 				else if(headerItems[i].contains("rule =")){
 					Pattern pattern = Pattern.compile("[A-Z 1-9]{2}\\/[A-Z 1-9]{3}");
 					Matcher matcher = pattern.matcher(headerItems[i]);

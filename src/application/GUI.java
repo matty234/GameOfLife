@@ -12,12 +12,14 @@ import javafx.animation.Timeline;
 import javafx.application.Application;
 import javafx.event.EventHandler;
 import javafx.scene.Scene;
+import javafx.scene.canvas.Canvas;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
 import javafx.scene.input.KeyCode;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.HBox;
+import javafx.scene.layout.StackPane;
 import javafx.scene.layout.VBox;
 import javafx.stage.Stage;
 import javafx.util.Duration;
@@ -86,44 +88,27 @@ public class GUI extends Application {
 			settingsPane.getChildren().add(zoomBox);
 
 			settingsPane.getChildren().add(infoText);
+			
+			Canvas canvas = board.getCanvas();
+			
+	        StackPane holder = new StackPane();
 
+	        
+	        holder.getChildren().add(canvas);
+	        
+	        
+			holder.setStyle("-fx-background-color: white");
+			
+			
 			BorderPane borderPane = new BorderPane(settingsPane, null, null, footer,
-					board.getCanvas());
+					holder);
 			borderPane.getStylesheets().add("http://pastebin.com/raw/c3ndLLFP");
+
 			Scene mainScene = new Scene(borderPane);
 			primaryStage.setScene(mainScene);
 			primaryStage.show();
-
-			/*
-			 * Resizing does work - just a bit buggy on some platforms (for
-			 * example, the title bar is taken into account on MacOS but not
-			 * Windows.
-			 */
+			
 			primaryStage.setResizable(true);
-			/*
-			 * double defaultWidth = primaryStage.getWidth(); double
-			 * defaultHeight = primaryStage.getHeight();
-			 * 
-			 * 
-			 * primaryStage.widthProperty().addListener(new
-			 * ChangeListener<Number>() {
-			 * 
-			 * @Override public void changed(ObservableValue<? extends Number>
-			 * observableValue, Number oldVal, Number newVal) {
-			 * board.setTileWidth((newVal.longValue() / defaultWidth) *
-			 * BoardGUI.DEFAULT_TILE_DIME);
-			 * board.setTileSpacingWidth((newVal.longValue() / defaultWidth) *
-			 * BoardGUI.DEFAULT_TILE_SPACING); } });
-			 * primaryStage.heightProperty().addListener(new
-			 * ChangeListener<Number>() {
-			 * 
-			 * @Override public void changed(ObservableValue<? extends Number>
-			 * observableValue, Number oldVal, Number newVal) {
-			 * board.setTileHeight((newVal.longValue() / defaultHeight) *
-			 * BoardGUI.DEFAULT_TILE_DIME);
-			 * board.setTileSpacingHeight((newVal.longValue() / defaultWidth) *
-			 * BoardGUI.DEFAULT_TILE_SPACING); } });
-			 */
 
 			primaryStage.setTitle("Game Of Life");
 			Timeline loop = new Timeline(new KeyFrame(Duration.millis(delay), e -> {

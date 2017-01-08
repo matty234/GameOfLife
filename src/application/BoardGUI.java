@@ -65,9 +65,9 @@ public class BoardGUI {
 	public void updateBoard(int[][] gridUpdate) {
 		for (int j = yOffset; j < yVisible + yOffset; j++) {
 			for (int i = xOffset; i < xVisible + xOffset; i++) {
-				if(gridUpdate[j][i] != 3) {
+				if(gridUpdate[j][i] != 0) {
 					//Rectangle r = (Rectangle) gridPane.getChildren().get(((width * j) + i));
-					gc.setFill(getRectangleColor(gridUpdate[j][i]));
+					gc.setFill(getDeltaRectangleColor(gridUpdate[j][i]));
 					gc.fillRect(squareDime * (i-xOffset), squareDime * (j-yOffset), squareDime, squareDime);
 				}
 			}
@@ -77,7 +77,7 @@ public class BoardGUI {
 	Color getRectangleColor(int i) {
 		switch (i) {
 		case 0:
-			return Color.WHITESMOKE;
+			return Color.WHITE;
 		case 1:
 			return Color.RED;
 		case 2:
@@ -87,6 +87,19 @@ public class BoardGUI {
 		}
 	}
 
+	Color getDeltaRectangleColor(int i) {
+		switch (i) {
+		case 1:
+			return Color.WHITE;
+		case 2:
+			return Color.RED;
+		case 3:
+			return Color.DARKRED;
+		default:
+			return Color.WHITE;
+		}
+	}
+	
 	public Canvas getCanvas() {
 		canvas.getStyleClass().add("canvasPane");
 		return canvas;
@@ -158,18 +171,14 @@ public class BoardGUI {
 		if(xOffset < grid.getWidth() - xVisible  && xOffset >= 0) {
 			gc.clearRect(0, 0, initialWidth*squareDime, initialHeight*squareDime);
 			this.xOffset = xOffset;
-		} else {
-			System.out.println("Reached end of grid");
-		}
+		} 
 	}
 
 	private void setYOffset(int yOffset) {
 		if(yOffset < grid.getHeight() - yVisible && yOffset >= 0) {
 			gc.clearRect(0, 0, initialWidth*squareDime, initialHeight*squareDime);
 			this.yOffset = yOffset;
-		} else {
-			System.out.println("Reached end of grid");
-		}
+		} 
 	}
 	
 	public void incYOffset(){

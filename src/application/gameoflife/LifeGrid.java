@@ -31,7 +31,7 @@ public class LifeGrid {
 
 	private void readSeed(File file, int x, int y) throws FileNotFoundException {
 		// RLEReader ignores the given X, Y attributes here
-		LifeReader reader = (RLEReader.isFileRLE(file)) ? new RLEReader(file) : new RAWReader(file, x, y);
+		LifeReader reader = (RLEReader.isFileRLE(file)) ? new RLEReader(file, x, y) : new RAWReader(file, x, y);
 		this.grid = reader.getGrid();
 		
 	}
@@ -101,21 +101,17 @@ public class LifeGrid {
 		for (int i = 0; i < originalGrid.length; i++) {
 			for (int j = 0; j < originalGrid[i].length; j++) {
 				if(originalGrid[i][j] > 0){
-					if(neighbours(j, i) < 2 && originalGrid[i][j] != 0){
-						deltaGrid[i][j] = 0;
-					} else if(neighbours(j, i) > 3 && originalGrid[i][j] != 0) {
-						deltaGrid[i][j] = 0;
-					} else if((neighbours(j, i) == 2 || neighbours(j, i) == 3) && originalGrid[i][j] != 2) {
-						deltaGrid[i][j] = 2;
-					} else {
+					if(neighbours(j, i) < 2){
+						deltaGrid[i][j] = 1;
+					} else if(neighbours(j, i) > 3) {
+						deltaGrid[i][j] = 1;
+					} else if((neighbours(j, i) == 2 || neighbours(j, i) == 3)) {
 						deltaGrid[i][j] = 3;
-					}
+					} 
 
 				} else {
-					if(neighbours(j, i) == 3 && originalGrid[i][j] != 1) {
-						deltaGrid[i][j] = 1;
-					} else {
-						deltaGrid[i][j] = 3;
+					if(neighbours(j, i) == 3 ) {
+						deltaGrid[i][j] = 2;
 					}
 				}
 			}
