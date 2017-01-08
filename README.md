@@ -1,4 +1,4 @@
-# Conways 'Game of Life' CS1801 Submission - Matt Brown 
+# Conways 'Game of Life' CS1801 Submission
 
 ## Usage
 
