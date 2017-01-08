@@ -10,17 +10,12 @@ java -jar GameOfLife.jar -h <height> -w <width> [-t] [—file=<filename.rle>]
 
 The program accepts the following parameters: (these can also be accessed by just running java -jar GameOfLife.jar)
 
-  -c,--cellsize <arg>   The pixel dimensions of each cell (only in GUI)
- 
-  -d,--delay <arg>      The number of milliseconds between each refresh
- 
-  -f,--file <arg>       The location of the seed file
- 
-  -h,--height <arg>     The height of the grid
- 
-  -t,--text             Output the contents of the game to the console
- 
-  -w,--width <arg>      The width of the grid
+      -c,--cellsize <arg>   The pixel dimensions of each cell (only in GUI)
+      -d,--delay <arg>      The number of milliseconds between each refresh
+      -f,--file <arg>       The location of the seed file
+      -h,--height <arg>     The height of the grid
+      -t,--text             Output the contents of the game to the console
+      -w,--width <arg>      The width of the grid
 
 
 For the seed file argument, files can be provided in any of the following formats: RLE, Life (1.05, 1.06), RAW. Please use 'dot and star' or 'space and star' notation for RAW.
