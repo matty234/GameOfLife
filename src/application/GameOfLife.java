@@ -46,6 +46,11 @@ public class GameOfLife {
 		Option delayOption = new Option("d", "delay", true, "The number of miliseconds between each refresh");
 		delayOption.setRequired(false);
 		options.addOption(delayOption);
+		
+		Option cellSize = new Option("c", "cellsize", true, "The pixel dimensions of each cell (only in GUI)");
+		cellSize.setRequired(false);
+		options.addOption(cellSize);
+		
 		CommandLineParser parser = new DefaultParser();
 		HelpFormatter formatter = new HelpFormatter();
 		CommandLine cmd;
@@ -82,7 +87,14 @@ public class GameOfLife {
 
 			gui.x = Integer.parseInt(cmd.getOptionValue("width"));
 			gui.y = Integer.parseInt(cmd.getOptionValue("height"));
-
+			
+			try {
+				if(cmd.hasOption("cellsize")) gui.cellSize = Integer.parseInt(cmd.getOptionValue("cellsize"));
+			} catch (NumberFormatException e) {
+				System.err.println("Please enter an integer value for the cell size.");
+				System.exit(1);
+			}
+			
 			if (cmd.hasOption("file")) {
 				gui.file = cmd.getOptionValue("file");
 			} else {
@@ -108,7 +120,6 @@ public class GameOfLife {
 			grid = new LifeGrid(new File(file), x, y);
 		}
 		grid.show();
-		int[][] d;
 		do {
 			Thread.sleep(delay);
 			grid.run();

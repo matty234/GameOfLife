@@ -1,4 +1,4 @@
-package application;
+package application.userinterfaces;
 
 import application.gameoflife.LifeGrid;
 import javafx.event.EventHandler;
@@ -73,7 +73,16 @@ public class BoardGUI {
 			}
 		}
 	}
-
+	/*public void updateCellSize() {
+		for (int j = 0; j < height; j++) {
+			for (int i = 0; i < width; i++) {
+				Rectangle r = (Rectangle) gridPane.getChildren().get(((width * j) + i));
+				r.setWidth(tileWidth);
+				r.setHeight(tileHeight);
+				GridPane.setMargin(r, new Insets(tileSpacingWidth, tileSpacingWidth, tileSpacingHeight, tileSpacingWidth));
+			}
+		}
+	}*/
 	Color getRectangleColor(int i) {
 		switch (i) {
 		case 0:

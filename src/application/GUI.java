@@ -28,6 +28,8 @@ public class GUI extends Application {
 	Stage primaryStage;
 	static int x;
 	static int y;
+	static int cellSize = 4;
+	static int zoom = 1;
 	final String FOOTER = "";
 	static int delay = 200;
 	static String file = null;
@@ -45,7 +47,7 @@ public class GUI extends Application {
 				grid = new LifeGrid(new File(file), x, y);
 			}
 			
-			board = new BoardGUI(grid, 1, 2);
+			board = new BoardGUI(grid, zoom, cellSize);
 
 
 			VBox settingsPane = new VBox(10);

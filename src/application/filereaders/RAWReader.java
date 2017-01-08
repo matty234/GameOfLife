@@ -20,7 +20,6 @@ public class RAWReader implements LifeReader{
 	
 	public RAWReader(File file) throws FileNotFoundException {
 		this.file = file;
-		
 		read();
 	}
 
@@ -32,11 +31,18 @@ public class RAWReader implements LifeReader{
 		int xLen = 0;
 		while (scanner.hasNext()) {
 			char[] rowString = scanner.nextLine().toCharArray();
-			for (int i = 0; i < rowString.length; i++) {
-				grid[yLen][i] = (rowString[i] == '*')?1:0;
+			if(y < yLen + 1) {
+				dirtyQuit(); //In a perfect world, should throw
+			} else if(x < rowString.length) {
+				dirtyQuit();
+			} else {
+				for (int i = 0; i < rowString.length; i++) {
+					grid[yLen][i] = (rowString[i] == '*')?1:0;
+				}
 			}
 			xLen = rowString.length;
 			yLen++;
+			
 		}
 		
 		if(x == 0 || y == 0) {
@@ -46,7 +52,13 @@ public class RAWReader implements LifeReader{
 		}
 		scanner.close();
 	}
-
+	
+	@Deprecated
+	public void dirtyQuit() {
+		System.err.println("The grid size cannot accomodate the provided RAW life grid.");
+		System.exit(1);
+	}
+	
 	@Override
 	public int[][] getGrid() {
 		return grid;
