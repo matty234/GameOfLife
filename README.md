@@ -1,10 +1,12 @@
 # Conways 'Game of Life' CS1801 Submission
 
+This Conways Game of Life simulation provides both a text based and graphical display of 'Game of Life' patterns.
+
 ## Usage
 
 For normal use, the program accepts the following parameters:
 
-java -jar GameOfLife.jar -h <height> -w <width> [-t] [—file=<filename.rle>]
+java -jar GameOfLife.jar -h <height> -w <width> [-t] [--file=<filename.rle>]
 
 ## Parameters
 
